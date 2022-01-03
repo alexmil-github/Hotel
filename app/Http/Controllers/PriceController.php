@@ -10,6 +10,7 @@ use App\Models\Price;
 use App\Models\Room_category;
 use DateTime;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use phpDocumentor\Reflection\Types\Collection;
@@ -20,6 +21,15 @@ class PriceController extends Controller
     public function index()
     {
         $prices = Price::all()->reverse();
+        if (Auth::user()->is_admin == 0) {
+            return response()->json([
+                'error' => [
+                    'code' => '403',
+                    'message' => 'Forbidden for you'
+                ]
+            ]);
+        }
+        return PriceResource::collection($prices);
     }
 
     public function store(PriceRequest $request)
