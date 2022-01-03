@@ -29,7 +29,11 @@ class PriceController extends Controller
                 ]
             ]);
         }
-        return PriceResource::collection($prices);
+        if (auth()->check()) {
+            return PriceResource::collection($prices);
+        }
+
+        return response()->json([ 'valid' => auth()->check() ]);
     }
 
     public function store(PriceRequest $request)

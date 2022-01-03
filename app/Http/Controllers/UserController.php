@@ -50,6 +50,15 @@ class UserController extends Controller
 
     }
 
+    public function unauthorized() {
+        return response()->json([
+            'errors' => [
+                'message' => 'Login failed'
+            ]
+        ], 403);
+    }
+
+
     public function index()
     {
         if (Auth::user()->is_admin == 0) {
@@ -73,10 +82,11 @@ class UserController extends Controller
                 ]
             ]);
         }
-
+        $host = $userRequest->getSchemeAndHttpHost();
+        $path = $userRequest->photo_file ? $userRequest->photo_file->store('photos','public') : null;
         $user = User::create([
                 'password' => $userRequest->password,
-                'photo_file' => $userRequest->photo_file ? $userRequest->photo_file->store('public') : null,
+                'photo_file' => $host.'/storage/'.$path
             ] + $userRequest->all()
         );
 
